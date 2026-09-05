@@ -1,0 +1,62 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "ask",
+
+    "external_directory": {
+        "*": "ask"
+    },
+
+    "glob": {
+      "*": "allow"
+    },
+    "grep": {
+      "*": "allow"
+    },
+    "list": {
+      "*": "allow"
+    },
+
+    "bash": {
+      "glob *": "allow",
+      "grep *": "allow",
+      "ls *": "allow",
+
+      "find *": "allow",
+      "rg *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "wc *": "allow",
+      "awk *": "allow",
+      "sort *": "allow",
+      
+      "git diff *": "allow",
+      "git status *": "allow",
+      "git branch *": "allow",
+      "git show *": "allow",
+      "git log *": "allow",
+      "git ls-files *": "allow",
+
+      "git add *": "ask",
+      "git commit *": "ask",
+
+      "gh pr view *": "allow",
+      "gh pr diff *": "allow"
+    },
+
+    "todoread": "allow",
+    "todowrite": "allow",
+
+    "task": {
+      "*": "ask",
+      "explore": "allow"
+    },
+
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    }
+  }
+}
