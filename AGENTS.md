@@ -7,6 +7,8 @@
 # Code
 - Prefer clarity and maintainability over cleverness; keep implementations reasonably concise.
 - Push back on requests that are unclear, lack context, or seem wrong/risky.
+- Always use curly brackets for if statements, if language allows.
+- Never use npx commands, or similar.
 
 # Git
 - Never commit or push unless explicitly asked.
