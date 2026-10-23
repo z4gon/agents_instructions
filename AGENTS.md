@@ -29,6 +29,12 @@
 - Do not write tests only to increase coverage.
 - Avoid brittle tests that fail on minor non-behavioral changes.
 - Prefer parametrized tests to reduce duplication.
+- Prefer positional arrays over objects for each parametrized row.
+    - Use type hints and labeled tuple elements to document column order.
+    - Prefix expected-result fields with `expected` (e.g. `expectedStatusCode` or `expected_status_code`).
 - Add a 1-line comment above each parametrized row describing the scenario.
+    - If each row is short, prefer 1-line comment to the right, to minimize LOC.
+    - If the row is self explanatory, don't add a comment.
+    - If several rows can be grouped under the same comment, group them.
 - In tests, prefer one variable declaration per line for readability/debugging.
 - Avoid magic numbers/strings in tests; use constants or fixtures.
