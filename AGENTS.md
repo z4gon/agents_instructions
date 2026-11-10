@@ -11,6 +11,7 @@
 - Never use npx commands, or similar.
 
 # Git
+- Match recent commit message style (see `git log --oneline`).
 - Never commit or push unless explicitly asked.
 - Never rebase, squash, amend or rewrite history unless explicitly asked.
 - Never force push.
