@@ -1,63 +1,53 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "*": "ask",
+  "permissions": [
+    // Ask by default, allow only what's explicitly listed below.
+    { "action": "*", "resource": "*", "effect": "ask" },
 
-    "external_directory": {
-        "*": "ask"
-    },
+    // External directories
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
 
-    "glob": {
-      "*": "allow"
-    },
-    "grep": {
-      "*": "allow"
-    },
-    "list": {
-      "*": "allow"
-    },
+    // Read-only tools
+    { "action": "glob", "resource": "*", "effect": "allow" },
+    { "action": "grep", "resource": "*", "effect": "allow" },
 
-    "bash": {
-      "glob *": "allow",
-      "grep *": "allow",
-      "ls *": "allow",
-      "cat *": "allow",
+    // Shell: file inspection
+    { "action": "shell", "resource": "glob *", "effect": "allow" },
+    { "action": "shell", "resource": "grep *", "effect": "allow" },
+    { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "shell", "resource": "cat *", "effect": "allow" },
+    { "action": "shell", "resource": "find *", "effect": "allow" },
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
+    { "action": "shell", "resource": "head *", "effect": "allow" },
+    { "action": "shell", "resource": "tail *", "effect": "allow" },
+    { "action": "shell", "resource": "wc *", "effect": "allow" },
+    { "action": "shell", "resource": "awk *", "effect": "allow" },
+    { "action": "shell", "resource": "sort *", "effect": "allow" },
 
-      "find *": "allow",
-      "rg *": "allow",
-      "head *": "allow",
-      "tail *": "allow",
-      "wc *": "allow",
-      "awk *": "allow",
-      "sort *": "allow",
-      
-      "git diff *": "allow",
-      "git status *": "allow",
-      "git branch *": "allow",
-      "git show *": "allow",
-      "git log *": "allow",
-      "git ls-files *": "allow",
+    // Shell: read-only git
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git branch *", "effect": "allow" },
+    { "action": "shell", "resource": "git show *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
 
-      "git add *": "ask",
-      "git commit *": "ask",
+    // Shell: git writes need approval
+    { "action": "shell", "resource": "git add *", "effect": "ask" },
+    { "action": "shell", "resource": "git commit *", "effect": "ask" },
 
-      "gh pr view *": "allow",
-      "gh pr diff *": "allow"
-    },
+    // Shell: read-only GitHub
+    { "action": "shell", "resource": "gh pr view *", "effect": "allow" },
+    { "action": "shell", "resource": "gh pr diff *", "effect": "allow" },
 
-    "todoread": "allow",
-    "todowrite": "allow",
+    // Subagents: ask, except explore
+    { "action": "subagent", "resource": "*", "effect": "ask" },
+    { "action": "subagent", "resource": "explore", "effect": "allow" },
 
-    "task": {
-      "*": "ask",
-      "explore": "allow"
-    },
-
-    "read": {
-      "*": "allow",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.env.example": "allow"
-    }
-  }
+    // Reads: allow, but keep .env files out (last match wins)
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": "*.env.*", "effect": "deny" },
+    { "action": "read", "resource": "*.env.example", "effect": "allow" }
+  ]
 }
