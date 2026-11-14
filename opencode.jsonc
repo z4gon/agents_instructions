@@ -7,6 +7,9 @@
     // External directories
     { "action": "external_directory", "resource": "*", "effect": "ask" },
 
+    // Let the agent ask clarifying questions without a permission prompt
+    { "action": "question", "resource": "*", "effect": "allow" },
+
     // Read-only tools
     { "action": "glob", "resource": "*", "effect": "allow" },
     { "action": "grep", "resource": "*", "effect": "allow" },
