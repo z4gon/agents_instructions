@@ -62,6 +62,7 @@
     { "action": "shell", "resource": "git blame *", "effect": "allow" },
     { "action": "shell", "resource": "git grep *", "effect": "allow" },
     { "action": "shell", "resource": "git describe *", "effect": "allow" },
+    { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
     { "action": "shell", "resource": "git shortlog *", "effect": "allow" },
     { "action": "shell", "resource": "git stash list *", "effect": "allow" },
 
