@@ -1,6 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "permissions": [
+    // Rationale:
+    // - allow read-only actions that don't read sensitive secrets
+    // - allow writes/edits that produce or edit a local text file
+    // - deny sensitive secret read/edit
+    // - deny side effects (exec/delete/mutate) in actions used mainly to read
+    // - always ask before working on an external directory
+    // - everything else asks
+
     // Ask by default, allow only what's explicitly listed below.
     { "action": "*", "resource": "*", "effect": "ask" },
 
@@ -24,8 +32,18 @@
     { "action": "shell", "resource": "head *", "effect": "allow" },
     { "action": "shell", "resource": "tail *", "effect": "allow" },
     { "action": "shell", "resource": "wc *", "effect": "allow" },
-    { "action": "shell", "resource": "awk *", "effect": "allow" },
     { "action": "shell", "resource": "sort *", "effect": "allow" },
+    // awk omitted: it can run system() and redirect output, so it can't be safely allowlisted
+
+    // Guards: deny exec/destructive vectors in the allowed commands (last match wins)
+    // find: -exec* covers -execdir, -ok* covers -okdir; plain file writes (-o, -fprint, --output) are allowed
+    { "action": "shell", "resource": "find * -exec*", "effect": "deny" },
+    { "action": "shell", "resource": "find * -ok*", "effect": "deny" },
+    { "action": "shell", "resource": "find * -delete*", "effect": "deny" },
+    // sort: --compress-program runs a helper program
+    { "action": "shell", "resource": "sort * --compress-program*", "effect": "deny" },
+    // rg: --pre runs a command on every file
+    { "action": "shell", "resource": "rg * --pre*", "effect": "deny" },
 
     // Shell: read-only git
     { "action": "shell", "resource": "git diff *", "effect": "allow" },
@@ -39,6 +57,20 @@
     { "action": "shell", "resource": "git describe *", "effect": "allow" },
     { "action": "shell", "resource": "git shortlog *", "effect": "allow" },
     { "action": "shell", "resource": "git stash list *", "effect": "allow" },
+
+    // Guards: git branch/diff/show also have mutating flags
+    { "action": "shell", "resource": "git branch * -d *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -D *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -m *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -M *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -c *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -u *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --delete*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --move*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --copy*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --set-upstream*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --unset-upstream*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --edit-description*", "effect": "deny" },
 
     // Shell: git writes need approval
     { "action": "shell", "resource": "git add *", "effect": "ask" },
