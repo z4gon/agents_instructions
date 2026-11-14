@@ -31,6 +31,11 @@
     { "action": "shell", "resource": "git show *", "effect": "allow" },
     { "action": "shell", "resource": "git log *", "effect": "allow" },
     { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+    { "action": "shell", "resource": "git blame *", "effect": "allow" },
+    { "action": "shell", "resource": "git grep *", "effect": "allow" },
+    { "action": "shell", "resource": "git describe *", "effect": "allow" },
+    { "action": "shell", "resource": "git shortlog *", "effect": "allow" },
+    { "action": "shell", "resource": "git stash list *", "effect": "allow" },
 
     // Shell: git writes need approval
     { "action": "shell", "resource": "git add *", "effect": "ask" },
@@ -39,6 +44,10 @@
     // Shell: read-only GitHub
     { "action": "shell", "resource": "gh pr view *", "effect": "allow" },
     { "action": "shell", "resource": "gh pr diff *", "effect": "allow" },
+    { "action": "shell", "resource": "gh pr list *", "effect": "allow" },
+    { "action": "shell", "resource": "gh pr checks *", "effect": "allow" },
+    { "action": "shell", "resource": "gh run list *", "effect": "allow" },
+    { "action": "shell", "resource": "gh run view *", "effect": "allow" },
 
     // Subagents: ask, except explore
     { "action": "subagent", "resource": "*", "effect": "ask" },
