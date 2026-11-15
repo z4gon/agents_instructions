@@ -9,6 +9,7 @@
 - Push back on requests that are unclear, lack context, or seem wrong/risky.
 - Always use curly brackets for if statements, if language allows.
 - Never use npx commands, or similar.
+- Use built-in `read` (with `offset`/`limit`), `glob`, and `grep` tools instead of shell commands like `cat`, `head`, `tail`, `find`, `rg`, or `ls`.
 
 # Git
 - Match recent commit message style (see `git log --oneline`).
