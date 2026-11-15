@@ -1,5 +1,18 @@
 {
   "$schema": "https://opencode.ai/config.json",
+
+  // ─── MCP servers (example) ────────────────────────────────────────────────
+
+  // Uncomment to configure a remote MCP server. Authenticate via /mcps if prompted.
+  // "mcp": {
+  //   "servers": {
+  //     "my-server": {
+  //       "type": "remote",
+  //       "url": "https://mcp.example.com/mcp"
+  //     }
+  //   }
+  // },
+
   "permissions": [
     // Ask by default; allowlist read-only tools, git/gh inspection, and local edits.
     // Hard-deny .env* read/edit (except .env.example); prompt on external dirs.
@@ -71,6 +84,13 @@
     { "action": "read", "resource": "*", "effect": "allow" }
   ],
   "policies": [
+    // ─── Provider allowlist (example) ───────────────────────────────────────
+
+    // Uncomment to allow only these providers. Last matching policy wins.
+    // { "action": "provider.use", "resource": "*", "effect": "deny" },
+    // { "action": "provider.use", "resource": "provider-a", "effect": "allow" },
+    // { "action": "provider.use", "resource": "provider-b", "effect": "allow" },
+
     // Hard-deny .env read/edit across all agents.
     // "allow" only lifts the policy deny; permissions above still allow .env.example.
     { "action": "tool.use", "resource": "edit:*.env", "effect": "deny" },
