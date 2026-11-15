@@ -3,6 +3,7 @@
   "permissions": [
     // Ask by default; allowlist read-only tools, git/gh inspection, and local edits.
     // Hard-deny .env* read/edit (except .env.example); prompt on external dirs.
+    // Keep any command with flag denies in its own section.
 
     // ─── Defaults ───────────────────────────────────────────────────────────────
 
@@ -36,16 +37,19 @@
     { "action": "shell", "resource": "git log *", "effect": "allow" },
     { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
     { "action": "shell", "resource": "git blame *", "effect": "allow" },
-    { "action": "shell", "resource": "git grep *", "effect": "allow" },
-    { "action": "shell", "resource": "git grep -O*", "effect": "deny" }, // executes pager
-    { "action": "shell", "resource": "git grep * -O*", "effect": "deny" },
-    { "action": "shell", "resource": "git grep --open-files-in-pager*", "effect": "deny" },
-    { "action": "shell", "resource": "git grep * --open-files-in-pager*", "effect": "deny" },
     { "action": "shell", "resource": "git describe *", "effect": "allow" },
     { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
     { "action": "shell", "resource": "git shortlog *", "effect": "allow" },
     { "action": "shell", "resource": "git stash list *", "effect": "allow" },
     // Writes fall back to ask
+
+    // ─── Shell: git grep ────────────────────────────────────────────────────────
+
+    { "action": "shell", "resource": "git grep *", "effect": "allow" },
+    { "action": "shell", "resource": "git grep -O*", "effect": "deny" }, // executes pager
+    { "action": "shell", "resource": "git grep * -O*", "effect": "deny" },
+    { "action": "shell", "resource": "git grep --open-files-in-pager*", "effect": "deny" },
+    { "action": "shell", "resource": "git grep * --open-files-in-pager*", "effect": "deny" },
 
     // ─── Shell: GitHub ──────────────────────────────────────────────────────────
 
