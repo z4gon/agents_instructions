@@ -33,26 +33,33 @@
     { "action": "shell", "resource": "grep *", "effect": "allow" },
     { "action": "shell", "resource": "ls *", "effect": "allow" },
     { "action": "shell", "resource": "cat *", "effect": "allow" },
-    { "action": "shell", "resource": "find *", "effect": "allow" },
-    { "action": "shell", "resource": "rg *", "effect": "allow" },
     { "action": "shell", "resource": "head *", "effect": "allow" },
     { "action": "shell", "resource": "tail *", "effect": "allow" },
     { "action": "shell", "resource": "wc *", "effect": "allow" },
-    { "action": "shell", "resource": "sort *", "effect": "allow" },
     // awk omitted: it can run system() and redirect output, so it can't be safely allowlisted
 
-    // Deny exec/destructive vectors in the allowed commands (last match wins)
-    // find: plain file writes (-o, -fprint, --output) are allowed
+    // ─── Shell: find ────────────────────────────────────────────────────────────
+
+    // Plain file writes (-o, -fprint, --output) are allowed; exec/delete vectors are denied
+    { "action": "shell", "resource": "find *", "effect": "allow" },
     { "action": "shell", "resource": "find -exec*", "effect": "deny" }, // also covers -execdir
     { "action": "shell", "resource": "find * -exec*", "effect": "deny" },
     { "action": "shell", "resource": "find -ok*", "effect": "deny" }, // also covers -okdir
     { "action": "shell", "resource": "find * -ok*", "effect": "deny" },
     { "action": "shell", "resource": "find -delete*", "effect": "deny" },
     { "action": "shell", "resource": "find * -delete*", "effect": "deny" },
-    // sort: --compress-program runs a helper program
+
+    // ─── Shell: sort ────────────────────────────────────────────────────────────
+
+    // --compress-program runs a helper program
+    { "action": "shell", "resource": "sort *", "effect": "allow" },
     { "action": "shell", "resource": "sort --compress-program*", "effect": "deny" },
     { "action": "shell", "resource": "sort * --compress-program*", "effect": "deny" },
-    // rg: --pre runs a command on every file
+
+    // ─── Shell: rg ──────────────────────────────────────────────────────────────
+
+    // --pre runs a command on every file
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
     { "action": "shell", "resource": "rg --pre*", "effect": "deny" },
     { "action": "shell", "resource": "rg * --pre*", "effect": "deny" },
 
