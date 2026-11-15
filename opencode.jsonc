@@ -9,7 +9,8 @@
     // - always ask before working on an external directory
     // - everything else asks
     //
-    // Note: use `cmd *-flag*` (not `cmd * -flag*`) so the direct form `cmd -flag ...` matches too.
+    // Note: flag denies list both `cmd -flag*` and `cmd * -flag*` instead of `cmd *-flag*`
+    // so flags match in any position without false-positives on names/paths (e.g. `fix-d`, `./my-exec`).
 
     // ─── Defaults ───────────────────────────────────────────────────────────────
 
@@ -44,13 +45,18 @@
 
     // Deny exec/destructive vectors in the allowed commands (last match wins)
     // find: plain file writes (-o, -fprint, --output) are allowed
-    { "action": "shell", "resource": "find *-exec*", "effect": "deny" }, // also covers -execdir
-    { "action": "shell", "resource": "find *-ok*", "effect": "deny" }, // also covers -okdir
-    { "action": "shell", "resource": "find *-delete*", "effect": "deny" },
+    { "action": "shell", "resource": "find -exec*", "effect": "deny" }, // also covers -execdir
+    { "action": "shell", "resource": "find * -exec*", "effect": "deny" },
+    { "action": "shell", "resource": "find -ok*", "effect": "deny" }, // also covers -okdir
+    { "action": "shell", "resource": "find * -ok*", "effect": "deny" },
+    { "action": "shell", "resource": "find -delete*", "effect": "deny" },
+    { "action": "shell", "resource": "find * -delete*", "effect": "deny" },
     // sort: --compress-program runs a helper program
-    { "action": "shell", "resource": "sort *--compress-program*", "effect": "deny" },
+    { "action": "shell", "resource": "sort --compress-program*", "effect": "deny" },
+    { "action": "shell", "resource": "sort * --compress-program*", "effect": "deny" },
     // rg: --pre runs a command on every file
-    { "action": "shell", "resource": "rg *--pre*", "effect": "deny" },
+    { "action": "shell", "resource": "rg --pre*", "effect": "deny" },
+    { "action": "shell", "resource": "rg * --pre*", "effect": "deny" },
 
     // ─── Shell: git ─────────────────────────────────────────────────────────────
 
@@ -70,29 +76,46 @@
 
     // Deny mutating flags in git branch, grouped by flag
     // delete
-    { "action": "shell", "resource": "git branch *-d *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *-D *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--delete*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -d *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -d *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -D *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -D *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --delete*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --delete*", "effect": "deny" },
     // rename/move
-    { "action": "shell", "resource": "git branch *-m *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *-M *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--move*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -m *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -m *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -M *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -M *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --move*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --move*", "effect": "deny" },
     // copy
-    { "action": "shell", "resource": "git branch *-c *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *-C *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--copy*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -c *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -c *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -C *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -C *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --copy*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --copy*", "effect": "deny" },
     // upstream
-    { "action": "shell", "resource": "git branch *-u *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--set-upstream*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--unset-upstream*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -u *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -u *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --set-upstream*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --set-upstream*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --unset-upstream*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --unset-upstream*", "effect": "deny" },
     // description
-    { "action": "shell", "resource": "git branch *--edit-description*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --edit-description*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --edit-description*", "effect": "deny" },
     // force (moves a branch pointer)
-    { "action": "shell", "resource": "git branch *-f *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--force*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -f *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -f *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --force*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --force*", "effect": "deny" },
     // track (writes tracking config)
-    { "action": "shell", "resource": "git branch *-t *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch *--track*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -t *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * -t *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch --track*", "effect": "deny" },
+    { "action": "shell", "resource": "git branch * --track*", "effect": "deny" },
 
     // Writes need approval
     { "action": "shell", "resource": "git add *", "effect": "ask" },
