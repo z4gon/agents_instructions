@@ -2,12 +2,11 @@
   "$schema": "https://opencode.ai/config.json",
   "permissions": [
     // Rationale:
-    // - allow read-only actions that don't read sensitive secrets
-    // - allow writes/edits that produce or edit a local text file
-    // - deny sensitive secret read/edit
-    // - deny side effects (exec/delete/mutate) in actions used mainly to read
+    // - ask by default; explicitly allowlist safe read-only actions and local text edits
+    // - anything not allowlisted falls back to ask
+    // - deny sensitive secret read/edit (.env*, except .env.example)
+    // - deny exec/destructive flags in allowed shell inspection commands
     // - always ask before working on an external directory
-    // - everything else asks
     //
     // Note: flag denies list both `cmd -flag*` and `cmd * -flag*` instead of `cmd *-flag*`
     // so flags match in any position without false-positives on names/paths (e.g. `fix-d`, `./my-exec`).
@@ -31,7 +30,6 @@
 
     // ─── Shell: file inspection ─────────────────────────────────────────────────
 
-    { "action": "shell", "resource": "glob *", "effect": "allow" },
     { "action": "shell", "resource": "grep *", "effect": "allow" },
     { "action": "shell", "resource": "ls *", "effect": "allow" },
     { "action": "shell", "resource": "cat *", "effect": "allow" },
@@ -63,7 +61,19 @@
     // Read-only git
     { "action": "shell", "resource": "git diff *", "effect": "allow" },
     { "action": "shell", "resource": "git status *", "effect": "allow" },
-    { "action": "shell", "resource": "git branch *", "effect": "allow" },
+    { "action": "shell", "resource": "git branch", "effect": "allow" }, // list local branches
+    { "action": "shell", "resource": "git branch -a", "effect": "allow" }, // list local and remote branches
+    { "action": "shell", "resource": "git branch -r", "effect": "allow" }, // list remote branches
+    { "action": "shell", "resource": "git branch -v", "effect": "allow" }, // list branches with last commit
+    { "action": "shell", "resource": "git branch -vv", "effect": "allow" }, // list branches with upstream and last commit
+    { "action": "shell", "resource": "git branch -av", "effect": "allow" }, // list all branches with last commit
+    { "action": "shell", "resource": "git branch -avv", "effect": "allow" }, // list all branches with upstream and last commit
+    { "action": "shell", "resource": "git branch --show-current", "effect": "allow" }, // print current branch name
+    { "action": "shell", "resource": "git branch --list *", "effect": "allow" }, // list branches matching a pattern
+    { "action": "shell", "resource": "git branch --merged *", "effect": "allow" }, // list branches merged into target
+    { "action": "shell", "resource": "git branch --no-merged *", "effect": "allow" }, // list branches not merged into target
+    { "action": "shell", "resource": "git branch --contains *", "effect": "allow" }, // list branches containing a commit
+    { "action": "shell", "resource": "git branch --no-contains *", "effect": "allow" }, // list branches not containing a commit
     { "action": "shell", "resource": "git show *", "effect": "allow" },
     { "action": "shell", "resource": "git log *", "effect": "allow" },
     { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
@@ -73,53 +83,7 @@
     { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
     { "action": "shell", "resource": "git shortlog *", "effect": "allow" },
     { "action": "shell", "resource": "git stash list *", "effect": "allow" },
-
-    // Deny mutating flags in git branch, grouped by flag
-    // delete
-    { "action": "shell", "resource": "git branch -d *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -d *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch -D *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -D *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --delete*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --delete*", "effect": "deny" },
-    // rename/move
-    { "action": "shell", "resource": "git branch -m *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -m *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch -M *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -M *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --move*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --move*", "effect": "deny" },
-    // copy
-    { "action": "shell", "resource": "git branch -c *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -c *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch -C *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -C *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --copy*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --copy*", "effect": "deny" },
-    // upstream
-    { "action": "shell", "resource": "git branch -u *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -u *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --set-upstream*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --set-upstream*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --unset-upstream*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --unset-upstream*", "effect": "deny" },
-    // description
-    { "action": "shell", "resource": "git branch --edit-description*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --edit-description*", "effect": "deny" },
-    // force (moves a branch pointer)
-    { "action": "shell", "resource": "git branch -f *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -f *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --force*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --force*", "effect": "deny" },
-    // track (writes tracking config)
-    { "action": "shell", "resource": "git branch -t *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * -t *", "effect": "deny" },
-    { "action": "shell", "resource": "git branch --track*", "effect": "deny" },
-    { "action": "shell", "resource": "git branch * --track*", "effect": "deny" },
-
-    // Writes need approval
-    { "action": "shell", "resource": "git add *", "effect": "ask" },
-    { "action": "shell", "resource": "git commit *", "effect": "ask" },
+    // Writes (git add, git commit, etc.) fall back to the default ask
 
     // ─── Shell: GitHub ──────────────────────────────────────────────────────────
 
@@ -133,8 +97,7 @@
 
     // ─── Subagents ──────────────────────────────────────────────────────────────
 
-    // Ask, except explore
-    { "action": "subagent", "resource": "*", "effect": "ask" },
+    // Allow explore; other subagents fall back to the default ask
     { "action": "subagent", "resource": "explore", "effect": "allow" },
 
     // ─── Secrets (.env) ─────────────────────────────────────────────────────────
